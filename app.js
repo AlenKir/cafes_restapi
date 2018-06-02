@@ -6,6 +6,8 @@ const parser = require('body-parser')
 const port = 8080
 const db = require('./config/db')
 
+app.use(express.static("./public"))
+app.use(parser.urlencoded({extended: false}))
 app.use(morgan('short'))
 app.use(parser.urlencoded({extended: true}))
 
@@ -61,6 +63,27 @@ app.get('/cafebyname/:name', (req, res) => {
 	  console.log(rows);
 	  }
 	});
+});
+
+app.post('/cafe_add', (req, res) => {
+	
+	console.log("Trying to add cafe...");
+	const name = req.body.add_name
+	const note = req.body.add_note
+	const address = req.body.add_address
+	
+	const q = "INSERT INTO cafe (cafe_name, cafe_note, cafe_address) VALUES (?, ?, ?)";
+	connection.query(q, [name, note, address], function (err, results, fields) {
+    if (err) { 
+		res.send(err)
+        //res.send({ 'error': 'An error has occurred' }); 
+      }
+	  else
+	  {
+	    console.log("Adding " + name + " " + " " + note + " " + address + "id = " + results.insertId);
+		res.end()
+	  }
+	})	
 });
 
 
